@@ -4,5 +4,5 @@ __pycache__/
 .vscode/
 venv/
 env/
-*.db
+#*.db
 credentials.txt
