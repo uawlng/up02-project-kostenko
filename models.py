@@ -1,4 +1,5 @@
 """Модели данных для проекта УП.02."""
+from discount import calculate_price_with_discount
 
 
 class Product:
@@ -31,6 +32,10 @@ class Product:
     def price_with_discount(self, discount_percent):
         """Цена со скидкой."""
         return self.price * (1 - discount_percent / 100)
+
+    def price_with_discount_auto(self):
+        """Цена со скидкой по алгоритму (30%, если товара < 3)."""
+        return calculate_price_with_discount(self.id, self.price)
 
     def indicator(self):
         """Индикатор «много/мало» (порог 5)."""
