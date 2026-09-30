@@ -2,6 +2,19 @@
 from discount import calculate_price_with_discount, get_product_quantity
 
 
+def print_test_report(passed, total):
+    """Выводит отчёт о тестировании."""
+    print("=" * 40)
+    print("ОТЧЁТ О ТЕСТИРОВАНИИ")
+    print(f"Пройдено: {passed} / {total}")
+    if passed == total:
+        print("Результат: ✅ УСПЕХ")
+    else:
+        print("Результат: ❌ ЕСТЬ ОШИБКИ")
+    print("=" * 40)
+
+
+
 def run_tests():
     """Прогон тестов."""
     test_cases = [
@@ -20,6 +33,11 @@ def run_tests():
         (5, 10000, 7000,  "Кровать: 10000 → 7000"),
         (999, 5000, 3500, "Несуществующий товар → 0 шт. → скидка"),
         (3, 8000, 8000,   "Стул: 20 шт. — без скидки"),
+                # --- ДЗ: граничные случаи ---
+        (5, 8000, 5600, "Кровать: 8000 → 5600 (скидка 30%)"),
+        (5, 0,     0,     "Товар с нулевой ценой → 0"),
+        (5, 50000, 35000, "Кровать: 50000 → 35000 (скидка 30%)"),
+        (999, 10000, 7000, "Несуществующий товар → скидка 30%"),
     ]
 
     print("=" * 75)
@@ -36,8 +54,7 @@ def run_tests():
         print(f"{status} id={product_id} (кол-во: {qty}): "
               f"{price} → {result} (ожидалось {expected}) — {comment}")
 
-    print("=" * 75)
-    print(f"Пройдено: {passed} / {len(test_cases)}")
+    print_test_report(passed, len(test_cases))
 
 
 if __name__ == "__main__":
