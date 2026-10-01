@@ -1,0 +1,10 @@
+* 7f8eb3b (HEAD -> main, origin/main, origin/HEAD) Добавлен important.txt, лог и tmp проигнорированы
+* c11829c Добавлен .gitignore с правилами для Python
+* cb95d19 Рабочая тетрадь №8
+*   542dcd9 ДЗ: работа с удалённым репозиторием
+|\  
+| * d5cb7d0 Update README.md
+| *   a971001 Merge pull request #2 from uawlng/feature/homework-8
+| |\  
+| | * cb2560b (origin/feature/homework-8, feature/homework-8) Домашнее задание 8
+:q

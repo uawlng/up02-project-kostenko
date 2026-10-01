@@ -32,6 +32,7 @@ Thumbs.db
 *.db
 *.sqlite
 *.sqlite3
+*.db-journal
 
 # Секретные данные
 credentials.txt
@@ -41,4 +42,10 @@ credentials.txt
 # Временные файлы
 *.tmp
 *.bak
+
+#Файлы Exel
+~$*.xlsx
+
+#Jupyter Notebook
+.ipynb_checkpoints/
 
