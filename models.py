@@ -52,6 +52,9 @@ class Product:
             f"{self.price} руб. × {self.quantity} = {self.total()} руб. "
             f"({self.indicator()})"
         )
+    def discounted_price(self):
+        """Цена со скидкой"""
+        return self.price * 0.75
 
 
 class Order:
