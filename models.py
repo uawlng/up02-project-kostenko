@@ -54,7 +54,11 @@ class Product:
         )
     def discounted_price(self):
         """Цена со скидкой"""
-        return self.price * 0.90
+
+        return self.price * 0.75
+
+        return self.price * 0.80
+
 
 
 class Order:
