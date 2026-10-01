@@ -90,3 +90,6 @@ class Order:
             f"Заказ №{self.id} от {self.date}: {self.client} — "
             f"{self.product.name} × {self.quantity} = {self.total()} руб."
         )
+
+    def order_info(self):
+        return f"Заказ №{self.id} от {self.date}: {self.client}"
