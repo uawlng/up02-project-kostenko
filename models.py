@@ -42,8 +42,8 @@ class Product:
         return "много" if self.quantity > 5 else "мало"
 
     def is_available(self):
-        """Есть ли товар в наличии."""
-        return self.quantity > 0
+        """Есть ли товар в наличии.""" #добавлено изменение для задания(добавление ошибки)
+        return self.quantity >= 0
 
     def info(self):
         """Строка с информацией о товаре."""
