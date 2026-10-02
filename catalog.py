@@ -1,6 +1,7 @@
 """Карточка товара."""
 import os
 import tkinter as tk
+from tkinter import ttk
 from PIL import Image, ImageTk
 from config import FONT_FAMILY, COLOR_BG, COLOR_HIGHLIGHT
 
@@ -64,5 +65,8 @@ def create_product_card(parent, product):
     tk.Label(price_frame,
              text=f"{product.price_with_discount_auto():.2f} руб.",
              bg=bg_color, font=(FONT_FAMILY, 14, "bold")).pack(anchor="e")
+    
+    separator = ttk.Separator(parent, orient="horizontal")
+    separator.pack(fill="x", padx=10, pady=(0, 5))
 
     return card

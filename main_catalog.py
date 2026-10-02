@@ -4,7 +4,8 @@ from tkinter import ttk
 from config import APP_TITLE, FONT_FAMILY, COLOR_BG, COLOR_BG_SECOND
 import db_products as db
 from catalog import create_product_card
-
+import os
+from PIL import Image, ImageTk
 
 class CatalogWindow:
     def __init__(self):
@@ -21,6 +22,18 @@ class CatalogWindow:
         header = tk.Frame(self.root, bg=COLOR_BG_SECOND)
         header.pack(fill="x")
 
+        logo_path = "resources/logo.png"
+        if os.path.exists(logo_path):
+            try:
+                logo_img = Image.open(logo_path).resize((50, 50))
+                self.logo_photo = ImageTk.PhotoImage(logo_img)
+                logo_label = tk.Label(header, image=self.logo_photo,
+                                       bg=COLOR_BG_SECOND)
+                logo_label.pack(side="left", padx=10, pady=5)
+            except Exception:
+                pass
+
+        # --- Надпись (по центру) ---
         tk.Label(header, text="КАТАЛОГ ТОВАРОВ",
                  font=(FONT_FAMILY, 16, "bold"),
                  bg=COLOR_BG_SECOND).pack(pady=15)
