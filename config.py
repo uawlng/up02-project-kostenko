@@ -1,15 +1,19 @@
 """Настройки проекта."""
 
+# Путь к БД (номер твоего варианта)
 DB_PATH = "databases/db_variant_29.db"
 
-# --- Шрифт ---
+# Название компании-заказчика
+COMPANY_NAME = "МебельПлюс"
+
+# Заголовок окна
+APP_TITLE = f"Каталог мебели — {COMPANY_NAME}"
+
+# Шрифт
 FONT_FAMILY = "Calibri"
 
-# --- Цвета ---
-COLOR_BG        = "#FFFFFF"   # основной фон (белый)
-COLOR_BG_SECOND = "#D2F6E7"   # доп. фон (светло-зелёный)
-COLOR_ACCENT    = "#70B2AF"   # акцент (бирюзовый)
-COLOR_HIGHLIGHT = "#ff8080"   # подсветка товаров ≤3 (светло-красный)
-
-# --- Заголовок окна ---
-APP_TITLE = "Каталог товаров"
+# Цвета (точно как в КИМ)
+COLOR_BG        = "#FFFFFF"
+COLOR_BG_SECOND = "#D2F6E7"
+COLOR_ACCENT    = "#70B2AF"
+COLOR_HIGHLIGHT = "#ff8080"
