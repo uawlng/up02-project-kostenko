@@ -38,8 +38,15 @@ def create_product_card(parent, product):
         img_label.image = photo             # type: ignore
         img_label.pack()
     except Exception:
-        tk.Label(img_frame, text="[НЕТ ФОТО]", bg=bg_color,
-                 font=(FONT_FAMILY, 10), width=10, height=5).pack()
+        placeholder = tk.Frame(img_frame, bg="#E0E0E0", width=100, height=100)
+        placeholder.pack_propagate(False)
+        placeholder.pack()
+        tk.Label(placeholder, text="📷", bg="#E0E0E0",
+                 font=("Arial", 24)).pack(expand=True)
+
+        tk.Label(placeholder, text="Нет фото", bg="#E0E0E0",
+                 font=(FONT_FAMILY, FONT_SIZE_NORMAL),
+                 fg="#666666").pack()
 
     # --- Цена (справа) ---
     price_frame = tk.Frame(card, bg=bg_color)
