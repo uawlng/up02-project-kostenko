@@ -2,12 +2,16 @@
 import os
 import tkinter as tk
 from tkinter import ttk
+from typing import Literal
 from PIL import Image, ImageTk
 from styles import (
     COLOR_MAIN_BG, COLOR_HIGHLIGHT,
     FONT_FAMILY, FONT_SIZE_NORMAL, FONT_SIZE_HEADER
 )
 
+
+# Тип для anchor (чтобы Pylance не ругался)
+AnchorType = Literal["nw", "n", "ne", "w", "center", "e", "sw", "s", "se"]
 
 _photos = []   # храним ссылки на картинки
 
@@ -104,7 +108,7 @@ def _get_final_price(product_id, price):
 
 
 def _add_label(parent, text, bg_color, bold=False,
-               size=FONT_SIZE_NORMAL, align="w"):
+               size=FONT_SIZE_NORMAL, align: AnchorType = "w"):
     """Добавляет одну метку с текстом."""
     font_style = (FONT_FAMILY, size, "bold") if bold else (FONT_FAMILY, size)
     tk.Label(parent, text=text, font=font_style,
