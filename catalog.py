@@ -73,20 +73,34 @@ def _add_text_info(card, product, bg_color):
     text_frame = tk.Frame(card, bg=bg_color)
     text_frame.pack(side="left", fill="both", expand=True, padx=10, pady=10)
 
-    # Защита от пустого названия
+    # Защита от пустых полей
     name = product.name if product.name else "[Без названия]"
+    category = product.category if product.category else "[Без категории]"
+    material = product.material if product.material else "[Не указан]"
+
+    # Цена с защитой от None
+    price = product.price if product.price is not None else 0
+    final_price = _get_final_price(product.id, price)
+
     _add_label(text_frame, name, bg_color,
                bold=True, size=FONT_SIZE_HEADER)
+    _add_label(text_frame, f"Категория: {category}", bg_color)
 
-    _add_label(text_frame, f"Категория: {product.category}", bg_color)
-
-    # Количество с индикатором
     indicator = _indicator(product.quantity)
     _add_label(text_frame, f"Количество: {indicator} ({product.quantity})", bg_color)
 
-    _add_label(text_frame, f"Материал: {product.material}", bg_color)
-    _add_label(text_frame, f"{product.price_with_discount_auto():.2f} руб.",
+    _add_label(text_frame, f"Материал: {material}", bg_color)
+    _add_label(text_frame, f"{final_price:.2f} руб.",
                bg_color, bold=True, size=FONT_SIZE_HEADER, align="e")
+
+
+def _get_final_price(product_id, price):
+    """Возвращает цену со скидкой или без (с защитой от None)."""
+    try:
+        from discount import calculate_price_with_discount
+        return calculate_price_with_discount(product_id, price)
+    except Exception:
+        return price
 
 
 def _add_label(parent, text, bg_color, bold=False,
@@ -105,5 +119,3 @@ def _indicator(qty):
     :return: «много» или «мало»
     """
     return "много" if qty > 5 else "мало"
-
-
