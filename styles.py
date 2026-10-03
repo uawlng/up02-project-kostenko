@@ -22,7 +22,7 @@ FONT_SIZE_TITLE = 18
 
 def font(size=FONT_SIZE_NORMAL, bold=False):
     """Возвращает кортеж шрифта."""
-    return (FONT_FAMILY, size, "bold" if bold else "normal")
+    return (FONT_FAMILY, size, "bold" if bold else "")
 
 
 def make_button(parent, text, command):
