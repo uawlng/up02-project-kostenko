@@ -6,7 +6,6 @@ from PIL import Image, ImageTk
 from styles import (
     COLOR_MAIN_BG, COLOR_HIGHLIGHT,
     FONT_FAMILY, FONT_SIZE_NORMAL, FONT_SIZE_HEADER
-
 )
 
 
@@ -23,11 +22,12 @@ def create_product_card(parent, product):
     _add_image(card, product, bg_color)
     _add_text_info(card, product, bg_color)
 
- # --- Разделитель снизу ---
+    # --- Разделитель снизу ---
     separator = ttk.Separator(parent, orient="horizontal")
     separator.pack(fill="x", padx=10, pady=(0, 5))
 
     return card
+
 
 def _get_card_color(qty):
     """Возвращает цвет фона карточки."""
@@ -73,10 +73,17 @@ def _add_text_info(card, product, bg_color):
     text_frame = tk.Frame(card, bg=bg_color)
     text_frame.pack(side="left", fill="both", expand=True, padx=10, pady=10)
 
-    _add_label(text_frame, product.name, bg_color,
+    # Защита от пустого названия
+    name = product.name if product.name else "[Без названия]"
+    _add_label(text_frame, name, bg_color,
                bold=True, size=FONT_SIZE_HEADER)
+
     _add_label(text_frame, f"Категория: {product.category}", bg_color)
-    _add_label(text_frame, f"Количество: {product.indicator()} ({product.quantity})", bg_color)
+
+    # Количество с индикатором
+    indicator = _indicator(product.quantity)
+    _add_label(text_frame, f"Количество: {indicator} ({product.quantity})", bg_color)
+
     _add_label(text_frame, f"Материал: {product.material}", bg_color)
     _add_label(text_frame, f"{product.price_with_discount_auto():.2f} руб.",
                bg_color, bold=True, size=FONT_SIZE_HEADER, align="e")
@@ -88,5 +95,15 @@ def _add_label(parent, text, bg_color, bold=False,
     font_style = (FONT_FAMILY, size, "bold") if bold else (FONT_FAMILY, size)
     tk.Label(parent, text=text, font=font_style,
              bg=bg_color, anchor=align).pack(fill="x")
+
+
+def _indicator(qty):
+    """
+    Индикатор «много/мало» (порог 5).
+
+    :param qty: количество товара
+    :return: «много» или «мало»
+    """
+    return "много" if qty > 5 else "мало"
 
 
