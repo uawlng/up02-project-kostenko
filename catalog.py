@@ -14,7 +14,7 @@ _photos = []   # храним ссылки на картинки
 
 def create_product_card(parent, product):
     """Создаёт карточку одного товара."""
-    bg_color = COLOR_HIGHLIGHT if product.quantity <= 3 else COLOR_MAIN_BG
+    bg_color = _get_card_color(product.quantity)
 
     card = tk.Frame(parent, bg=bg_color, bd=1, relief="solid")
     card.pack(fill="x", padx=10, pady=(5, 0))
