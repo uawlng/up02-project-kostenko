@@ -61,7 +61,7 @@ class CatalogWindow:
         logo = load_image_proportional(PATH_LOGO, max_size=(60, 60))
         if logo:
             logo_label = tk.Label(header, image=logo, bg=COLOR_SECONDARY_BG)
-            logo_label.image = logo
+            logo_label.image = logo  # type: ignore
             logo_label.pack(side="left", padx=15)
         else:
             tk.Label(header, text="[ЛОГОТИП]",
