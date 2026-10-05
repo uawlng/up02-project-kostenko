@@ -97,18 +97,50 @@ def test_cyrillic():
         print("✅ Все названия на кириллице")
 
 
+def test_names_not_empty():
+    """Проверяет, что у всех товаров есть название."""
+    products = db.get_all_products()
+    errors = 0
+
+    for p in products:
+        if not p.name or not p.name.strip():
+            print(f"❌ Товар id={p.id}: пустое название")
+            errors += 1
+
+    if errors == 0:
+        print("✅ У всех товаров есть название")
+
+
+def run_all_tests():
+    """Прогон всех тестов каталога."""
+    tests = [
+        ("Проверка полей", test_fields),
+        ("Проверка цен", test_prices),
+        ("Проверка количества", test_quantities),
+        ("Проверка изображений", test_has_images),
+        ("Дорогие товары (> 1 000 000)", test_expensive),
+        ("Длинные названия (> 100)", test_long_names),
+        ("Проверка кириллицы", test_cyrillic),
+        ("Проверка названий (не пустые)", test_names_not_empty),
+    ]
+
+    print("=" * 60)
+    print("ТЕСТИРОВАНИЕ КАТАЛОГА")
+    print("=" * 60)
+
+    passed = 0
+    for name, func in tests:
+        print(f"\n{name}")
+        try:
+            func()
+            passed += 1
+        except Exception as e:
+            print(f"❌ Ошибка: {e}")
+
+    print("=" * 60)
+    print(f"Пройдено: {passed} / {len(tests)}")
+    print("=" * 60)
+
+
 if __name__ == "__main__":
-    print(" 1. Поля ")
-    test_fields()
-    print("\n 2. Цены ")
-    test_prices()
-    print("\n 3. Количество ")
-    test_quantities()
-    print("\n4. Изображения ")
-    test_has_images()
-    print("\n 5. Дорогие (> 1 000 000) ")
-    test_expensive()
-    print("\n 6. Длинные названия ")
-    test_long_names()
-    print("\n 7. Кириллица ")
-    test_cyrillic()
+    run_all_tests()
