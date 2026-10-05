@@ -10,10 +10,9 @@ from styles import (
 )
 
 
-# Тип для anchor (чтобы Pylance не ругался)
 AnchorType = Literal["nw", "n", "ne", "w", "center", "e", "sw", "s", "se"]
 
-_photos = []   # храним ссылки на картинки
+_photos = []
 
 
 def create_product_card(parent, product):
@@ -26,11 +25,23 @@ def create_product_card(parent, product):
     _add_image(card, product, bg_color)
     _add_text_info(card, product, bg_color)
 
-    # --- Разделитель снизу ---
     separator = ttk.Separator(parent, orient="horizontal")
     separator.pack(fill="x", padx=10, pady=(0, 5))
 
+    def _bind_recursive(widget):
+        widget.bind("<Button-1>", lambda e: _open_view(parent, product))
+        for child in widget.winfo_children():
+            _bind_recursive(child)
+
+    _bind_recursive(card)
+
     return card
+
+
+def _open_view(parent, product):
+    """Открывает форму просмотра товара."""
+    from view_form import ViewForm
+    ViewForm(parent, product)
 
 
 def _get_card_color(qty):
@@ -53,7 +64,7 @@ def _add_image(card, product, bg_color):
         photo = ImageTk.PhotoImage(img)
         _photos.append(photo)
         img_label = tk.Label(img_frame, image=photo, bg=bg_color)
-        img_label.image = photo   # type: ignore
+        img_label.image = photo
         img_label.pack()
     except Exception:
         _add_placeholder(img_frame, bg_color)
@@ -77,12 +88,10 @@ def _add_text_info(card, product, bg_color):
     text_frame = tk.Frame(card, bg=bg_color)
     text_frame.pack(side="left", fill="both", expand=True, padx=10, pady=10)
 
-    # Защита от пустых полей
     name = product.name if product.name else "[Без названия]"
     category = product.category if product.category else "[Без категории]"
     material = product.material if product.material else "[Не указан]"
 
-    # Цена с защитой от None
     price = product.price if product.price is not None else 0
     final_price = _get_final_price(product.id, price)
 
@@ -117,9 +126,9 @@ def _add_label(parent, text, bg_color, bold=False,
 
 def _indicator(qty):
     """
-    Индикатор «много/мало» (порог 5).
+    Индикатор «много/мало» (порог 3).
 
     :param qty: количество товара
     :return: «много» или «мало»
     """
-    return "много" if qty > 5 else "мало"
+    return "много" if qty > 3 else "мало"
