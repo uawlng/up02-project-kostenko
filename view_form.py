@@ -8,6 +8,7 @@ from styles import (
     FONT_SIZE_NORMAL, FONT_SIZE_HEADER, FONT_SIZE_TITLE, font
 )
 from resources import load_image, get_product_image
+from error_handler import validate_positive_int
 
 
 class ViewForm:
@@ -41,6 +42,7 @@ class ViewForm:
         main = tk.Frame(self.window, bg=COLOR_MAIN_BG)
         main.pack(fill="both", expand=True, padx=20, pady=20)
 
+        # Изображение
         img_frame = tk.Frame(main, bg=COLOR_MAIN_BG)
         img_frame.pack(side="left", padx=10)
 
@@ -50,6 +52,7 @@ class ViewForm:
             img_label.image = photo
             img_label.pack()
 
+        # Информация
         info_frame = tk.Frame(main, bg=COLOR_MAIN_BG)
         info_frame.pack(side="left", fill="both", expand=True, padx=20)
 
@@ -59,6 +62,31 @@ class ViewForm:
         self._add_field(info_frame, "Цена",         f"{self.product.price} руб.")
         self._add_field(info_frame, "Количество",   self.product.quantity)
 
+        # Поле ввода количества (ДЗ Задание 2)
+        qty_frame = tk.Frame(self.window, bg=COLOR_MAIN_BG)
+        qty_frame.pack(fill="x", padx=20, pady=5)
+
+        tk.Label(qty_frame, text="Количество:",
+                 font=font(FONT_SIZE_NORMAL),
+                 bg=COLOR_MAIN_BG).pack(side="left")
+
+        qty_entry = tk.Entry(qty_frame, font=font(FONT_SIZE_NORMAL))
+        qty_entry.pack(side="left", padx=10)
+
+        def check_qty():
+            ok, result = validate_positive_int(qty_entry.get(), "Количество")
+            if ok:
+                messagebox.showinfo("OK", f"Количество: {result}")
+            else:
+                messagebox.showwarning("Ошибка", result)
+
+        tk.Button(qty_frame, text="Проверить",
+                  command=check_qty,
+                  bg=COLOR_ACCENT, fg="white",
+                  font=font(FONT_SIZE_NORMAL),
+                  padx=15, pady=5).pack(side="left")
+
+        # Кнопки
         btn_frame = tk.Frame(self.window, bg=COLOR_MAIN_BG)
         btn_frame.pack(fill="x", pady=10)
 

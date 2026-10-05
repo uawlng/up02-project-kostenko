@@ -21,6 +21,7 @@ class CatalogWindow:
         self.load_products()
 
     def set_icon(self):
+        """Устанавливает иконку приложения (кроссплатформенно)."""
         try:
             if os.name == "nt":
                 self.root.iconbitmap(PATH_ICON)
@@ -66,6 +67,7 @@ class CatalogWindow:
         scrollbar.pack(side="right", fill="y")
 
     def load_products(self):
+        """Загружает товары с обработкой ошибок."""
         products = safe_call(db.get_all_products) or []
         for p in products:
             safe_call(create_product_card, self.catalog_frame, p)
