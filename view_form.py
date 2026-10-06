@@ -9,7 +9,7 @@ from styles import (
 from resources import load_image, get_product_image
 from error_handler import validate_positive_int
 from order_manager import (
-    add_order_to_db,
+    create_order,
     update_product_quantity,
     get_product_quantity
 )
@@ -126,10 +126,12 @@ class ViewForm:
             if qty > current_qty:
                 messagebox.showwarning("Внимание", f"В наличии только {current_qty} шт.")
                 return
+
+            print(f"DEBUG: id={self.product.id}, name={self.product.name}, price={self.product.price}")
             
-            new_qty = current_qty - qty
-            add_order_to_db("Иванов Иван Иванович", product_id, qty)
-            update_product_quantity(product_id, new_qty)
+            items = [(product_id, qty, self.product.price)]
+            order_id = create_order("Иванов Иван Иванович", items)
+            update_product_quantity(product_id, current_qty - qty)
 
             messagebox.showinfo("Успех", "Заказ оформлен")
 
