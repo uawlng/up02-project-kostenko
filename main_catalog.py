@@ -67,10 +67,15 @@ class CatalogWindow:
         scrollbar.pack(side="right", fill="y")
 
     def load_products(self):
-        """Загружает товары с обработкой ошибок."""
-        products = safe_call(db.get_all_products) or []
+        products = db.get_all_products()
         for p in products:
-            safe_call(create_product_card, self.catalog_frame, p)
+            create_product_card(self.catalog_frame, p, self.refresh_catalog)
+
+    def refresh_catalog(self):
+        """Очищает каталог и загружает заново."""
+        for widget in self.catalog_frame.winfo_children():
+            widget.destroy()
+        self.load_products()
 
     def run(self):
         self.root.mainloop()

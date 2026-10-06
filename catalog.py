@@ -15,12 +15,13 @@ AnchorType = Literal["nw", "n", "ne", "w", "center", "e", "sw", "s", "se"]
 _photos = []
 
 
-def create_product_card(parent, product):
+def create_product_card(parent, product, refresh=None):
     """Создаёт карточку одного товара."""
     bg_color = _get_card_color(product.quantity)
 
     card = tk.Frame(parent, bg=bg_color, bd=1, relief="solid")
     card.pack(fill="x", padx=10, pady=(5, 0))
+    card.bind("<Button-1>", lambda e: _open_view(parent, product,refresh))
 
     _add_image(card, product, bg_color)
     _add_text_info(card, product, bg_color)
@@ -29,7 +30,7 @@ def create_product_card(parent, product):
     separator.pack(fill="x", padx=10, pady=(0, 5))
 
     def _bind_recursive(widget):
-        widget.bind("<Button-1>", lambda e: _open_view(parent, product))
+        widget.bind("<Button-1>", lambda e: _open_view(parent, product,refresh))
         for child in widget.winfo_children():
             _bind_recursive(child)
 
@@ -38,10 +39,10 @@ def create_product_card(parent, product):
     return card
 
 
-def _open_view(parent, product):
+def _open_view(parent, product,refresh=None):
     """Открывает форму просмотра товара."""
     from view_form import ViewForm
-    ViewForm(parent, product)
+    ViewForm(parent, product, on_add_to_order=refresh)
 
 
 def _get_card_color(qty):

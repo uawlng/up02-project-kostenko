@@ -1,5 +1,4 @@
 """Форма просмотра товара."""
-
 import tkinter as tk
 from tkinter import ttk, messagebox
 
@@ -9,14 +8,15 @@ from styles import (
 )
 from resources import load_image, get_product_image
 from error_handler import validate_positive_int
+from order_manager import (
+    add_order_to_db,
+    update_product_quantity,
+    get_product_quantity
+)
 
 
 class ViewForm:
-    """
-    Форма просмотра выбранного товара.
-
-    Открывается при клике на карточку в каталоге.
-    """
+    """Форма просмотра выбранного товара."""
 
     def __init__(self, parent, product, on_add_to_order=None):
         self.product = product
@@ -62,7 +62,7 @@ class ViewForm:
         self._add_field(info_frame, "Цена",         f"{self.product.price} руб.")
         self._add_field(info_frame, "Количество",   self.product.quantity)
 
-        # Поле ввода количества (ДЗ Задание 2)
+        # Поле ввода количества
         qty_frame = tk.Frame(self.window, bg=COLOR_MAIN_BG)
         qty_frame.pack(fill="x", padx=20, pady=5)
 
@@ -120,17 +120,26 @@ class ViewForm:
 
     def add_to_order(self):
         """Обработчик кнопки «Добавить в заказ»."""
-        if not self.on_add_to_order:
-            messagebox.showinfo("Информация", "Функция в разработке")
-            return
-
         if not self.product:
             messagebox.showerror("Ошибка", "Товар не выбран")
             return
 
         try:
-            self.on_add_to_order(self.product)
-            messagebox.showinfo("Успех", "Товар добавлен в заказ")
+            product_id = self.product.id
+            current_qty = get_product_quantity(product_id)
+
+            if current_qty < 1:
+                messagebox.showwarning("Внимание", "Товар закончился")
+                return
+
+            new_qty = current_qty - 1
+            add_order_to_db("Иванов Иван Иванович", product_id, 1)
+            update_product_quantity(product_id, new_qty)
+
+            messagebox.showinfo("Успех", "Заказ оформлен")
+
+            if self.on_add_to_order:
+                self.on_add_to_order()
+
         except Exception as e:
-            messagebox.showerror("Ошибка заказа",
-                                 f"Не удалось добавить товар:\n{e}")
+            messagebox.showerror("Ошибка", f"Не удалось оформить заказ: {e}")
