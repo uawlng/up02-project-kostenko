@@ -63,43 +63,27 @@ class ViewForm:
         self._add_field(info_frame, "Количество",   self.product.quantity)
 
         # Поле ввода количества
-        qty_frame = tk.Frame(self.window, bg=COLOR_MAIN_BG)
+        qty_frame = tk.Frame(info_frame, bg=COLOR_MAIN_BG)
         qty_frame.pack(fill="x", padx=20, pady=5)
 
         tk.Label(qty_frame, text="Количество:",
                  font=font(FONT_SIZE_NORMAL),
                  bg=COLOR_MAIN_BG).pack(side="left")
 
-        qty_entry = tk.Entry(qty_frame, font=font(FONT_SIZE_NORMAL))
+        self.qty_var = tk.StringVar(value="1")
+        qty_entry = tk.Entry(qty_frame, textvariable=self.qty_var, font=font(FONT_SIZE_NORMAL))
         qty_entry.pack(side="left", padx=10)
-
-        def check_qty():
-            ok, result = validate_positive_int(qty_entry.get(), "Количество")
-            if ok:
-                messagebox.showinfo("OK", f"Количество: {result}")
-            else:
-                messagebox.showwarning("Ошибка", result)
-
-        tk.Button(qty_frame, text="Проверить",
-                  command=check_qty,
-                  bg=COLOR_ACCENT, fg="white",
-                  font=font(FONT_SIZE_NORMAL),
-                  padx=15, pady=5).pack(side="left")
 
         # Кнопки
         btn_frame = tk.Frame(self.window, bg=COLOR_MAIN_BG)
         btn_frame.pack(fill="x", pady=10)
 
-        tk.Button(btn_frame, text="Добавить в заказ",
-                  command=self.add_to_order,
-                  bg=COLOR_ACCENT, fg="white",
-                  font=font(FONT_SIZE_NORMAL),
+        tk.Button(btn_frame, text="Добавить в заказ", command=self.add_to_order,
+                  bg=COLOR_ACCENT, fg="white", font=font(FONT_SIZE_NORMAL),
                   padx=15, pady=5).pack(side="left", padx=20)
 
-        tk.Button(btn_frame, text="Назад",
-                  command=self.window.destroy,
-                  bg=COLOR_ACCENT, fg="white",
-                  font=font(FONT_SIZE_NORMAL),
+        tk.Button(btn_frame, text="Назад", command=self.window.destroy,
+                  bg=COLOR_ACCENT, fg="white", font=font(FONT_SIZE_NORMAL),
                   padx=15, pady=5).pack(side="right", padx=20)
 
     def _add_field(self, parent, label, value):
@@ -120,6 +104,13 @@ class ViewForm:
 
     def add_to_order(self):
         """Обработчик кнопки «Добавить в заказ»."""
+        ok, result = validate_positive_int(self.qty_var.get(), "Количество")
+        if not ok:
+            messagebox.showerror("Ошибка ввода", result)
+            return
+        qty = result
+        
+        
         if not self.product:
             messagebox.showerror("Ошибка", "Товар не выбран")
             return
@@ -132,8 +123,12 @@ class ViewForm:
                 messagebox.showwarning("Внимание", "Товар закончился")
                 return
 
-            new_qty = current_qty - 1
-            add_order_to_db("Иванов Иван Иванович", product_id, 1)
+            if qty > current_qty:
+                messagebox.showwarning("Внимание", f"В наличии только {current_qty} шт.")
+                return
+            
+            new_qty = current_qty - qty
+            add_order_to_db("Иванов Иван Иванович", product_id, qty)
             update_product_quantity(product_id, new_qty)
 
             messagebox.showinfo("Успех", "Заказ оформлен")
