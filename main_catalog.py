@@ -2,7 +2,7 @@
 import os
 import tkinter as tk
 from tkinter import ttk
-from styles import COLOR_SECONDARY_BG, FONT_FAMILY, FONT_SIZE_TITLE, font
+from styles import COLOR_SECONDARY_BG, COLOR_ACCENT, FONT_FAMILY, FONT_SIZE_TITLE, FONT_SIZE_NORMAL, font
 from config import APP_TITLE
 import db_products as db
 from catalog import create_product_card
@@ -43,7 +43,7 @@ class CatalogWindow:
         logo = load_image_proportional(PATH_LOGO, max_size=(60, 60))
         if logo:
             logo_label = tk.Label(header, image=logo, bg=COLOR_SECONDARY_BG)
-            logo_label.image = logo
+            logo_label.image = logo # type: ignore
             logo_label.pack(side="left", padx=15)
         else:
             tk.Label(header, text="[ЛОГОТИП]",
@@ -52,6 +52,12 @@ class CatalogWindow:
         tk.Label(header, text="КАТАЛОГ ТОВАРОВ",
                  font=(FONT_FAMILY, 16, "bold"),
                  bg=COLOR_SECONDARY_BG).pack(expand=True)
+
+        tk.Button(header, text="Заказы", command=self.open_orders,
+          bg=COLOR_ACCENT, fg="white",
+          font=font(FONT_SIZE_NORMAL),
+          padx=10, pady=5).pack(side="right", padx=10)
+
 
         self.canvas = tk.Canvas(self.root, bg="white", highlightthickness=0)
         scrollbar = ttk.Scrollbar(self.root, orient="vertical",
@@ -65,6 +71,13 @@ class CatalogWindow:
         self.canvas.configure(yscrollcommand=scrollbar.set)
         self.canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
+
+
+    def open_orders(self):
+        """Открывает окно списка заказов."""
+        from orders_window import OrdersWindow
+        OrdersWindow(self.root)
+
 
     def load_products(self):
         products = db.get_all_products()

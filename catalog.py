@@ -65,7 +65,7 @@ def _add_image(card, product, bg_color):
         photo = ImageTk.PhotoImage(img)
         _photos.append(photo)
         img_label = tk.Label(img_frame, image=photo, bg=bg_color)
-        img_label.image = photo
+        img_label.image = photo # type: ignore
         img_label.pack()
     except Exception:
         _add_placeholder(img_frame, bg_color)

@@ -49,7 +49,7 @@ class ViewForm:
         photo = get_product_image(self.product.image, size=(200, 200))
         if photo:
             img_label = tk.Label(img_frame, image=photo, bg=COLOR_MAIN_BG)
-            img_label.image = photo
+            img_label.image = photo # type: ignore
             img_label.pack()
 
         # Информация
@@ -106,7 +106,7 @@ class ViewForm:
         """Обработчик кнопки «Добавить в заказ»."""
         ok, result = validate_positive_int(self.qty_var.get(), "Количество")
         if not ok:
-            messagebox.showerror("Ошибка ввода", result)
+            messagebox.showerror("Ошибка ввода", str(result))
             return
         qty = result
         
