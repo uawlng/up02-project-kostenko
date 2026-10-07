@@ -29,7 +29,7 @@ class MainWindow:
         self.load_products()
         self.require_auth()
 
-    # ---------- Интерфейс ----------
+    #Интерфейс
 
     def build_ui(self):
         """Строит интерфейс окна."""
@@ -77,7 +77,7 @@ class MainWindow:
         self.canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
 
-    # ---------- Авторизация ----------
+    #Авторизация
 
     def require_auth(self):
         """Запрашивает авторизацию через отдельное окно."""
@@ -120,7 +120,7 @@ class MainWindow:
                 padx=10, pady=5
             ).pack(side="right", padx=10)
 
-    # ---------- Действия ----------
+    #Действия
 
     def open_orders(self):
         """Открывает окно списка заказов."""
@@ -132,7 +132,7 @@ class MainWindow:
         from admin_panel import AdminPanel
         AdminPanel(self.root, self.current_user)
 
-    # ---------- Каталог ----------
+    #Каталог
 
     def load_products(self):
         """Загружает товары в каталог."""
@@ -141,13 +141,14 @@ class MainWindow:
             create_product_card(self.catalog_frame, p,
                                 refresh=self.refresh_catalog)
 
+
     def refresh_catalog(self):
         """Обновляет каталог."""
         for widget in self.catalog_frame.winfo_children():
             widget.destroy()
         self.load_products()
 
-    # ---------- Запуск ----------
+    #Запуск 
 
     def run(self):
         """Запускает приложение."""
@@ -155,4 +156,4 @@ class MainWindow:
 
 
 if __name__ == "__main__":
-    MainWindow().run()
+    MainWindow().run() 
