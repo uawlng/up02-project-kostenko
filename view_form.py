@@ -10,7 +10,7 @@ from resources import load_image, get_product_image
 from error_handler import validate_positive_int
 from order_manager import (
     create_order,
-    update_product_quantity,
+    decrease_product_quantity,
     get_product_quantity
 )
 
@@ -131,8 +131,6 @@ class ViewForm:
             
             items = [(product_id, qty, self.product.price)]
             order_id = create_order("Иванов Иван Иванович", items)
-            update_product_quantity(product_id, current_qty - qty)
-
             messagebox.showinfo("Успех", "Заказ оформлен")
 
             if self.on_add_to_order:
