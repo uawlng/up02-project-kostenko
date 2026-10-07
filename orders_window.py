@@ -1,127 +1,101 @@
-"""Окно списка заказов для Менеджера."""
+"""Окно списка заказов с проверкой прав доступа."""
 import tkinter as tk
 from tkinter import ttk, messagebox
+
 from styles import (
-    COLOR_MAIN_BG, COLOR_SECONDARY_BG, COLOR_ACCENT,
-    FONT_SIZE_NORMAL, FONT_SIZE_HEADER, FONT_SIZE_TITLE, font
+    COLOR_SECONDARY_BG, COLOR_ACCENT,
+    FONT_SIZE_NORMAL, FONT_SIZE_TITLE, font
 )
-import order_manager as om
-
-
 
 
 class OrdersWindow:
-    """Окно списка заказов."""
+    ALLOWED_ROLES = ("Менеджер", "Администратор")
 
+    def __init__(self, parent, current_user=None):
+        self.current_user = current_user
 
-    def __init__(self, parent):
-        """
-        Инициализация окна.
-        :param parent: родительское окно
-        """
-        self.window = tk.Toplevel(parent)
-        self.window.title("Список заказов")
-        self.window.geometry("800x500")
-        self.window.configure(bg=COLOR_MAIN_BG)
+        if not self._check_access():
+            return
 
+        self.win = tk.Toplevel(parent)
+        self.win.title("Заказы")
+        self.win.geometry("800x500")
+        self.win.configure(bg="white")
 
-        self.build_ui()
-        self.load_orders()
-
-
-    def build_ui(self):
-        """Строит интерфейс окна."""
-        # Шапка
-        header = tk.Frame(self.window, bg=COLOR_SECONDARY_BG, height=60)
+        header = tk.Frame(self.win, bg=COLOR_SECONDARY_BG, height=60)
         header.pack(fill="x")
         header.pack_propagate(False)
 
+        tk.Label(
+            header, text="СПИСОК ЗАКАЗОВ",
+            font=font(FONT_SIZE_TITLE, bold=True),
+            bg=COLOR_SECONDARY_BG, fg="white"
+        ).pack(side="left", padx=15, pady=15)
 
-        tk.Label(header, text="СПИСОК ЗАКАЗОВ",
-                 font=font(FONT_SIZE_TITLE, bold=True),
-                 bg=COLOR_SECONDARY_BG).pack(pady=15)
+        if current_user:
+            fio = f"{current_user[1]} {current_user[2]}"
+            tk.Label(
+                header, text=f"{fio} ({current_user[5]})",
+                font=font(FONT_SIZE_NORMAL),
+                bg=COLOR_SECONDARY_BG, fg="white"
+            ).pack(side="right", padx=15)
 
+        self.build_table()
+        self.load_orders()
 
-        # Таблица заказов
-        columns = ("id", "date", "client")
-        self.tree = ttk.Treeview(self.window, columns=columns,
-                                 show="headings", height=15)
+    def _check_access(self):
+        if self.current_user is None:
+            messagebox.showwarning("Доступ запрещён", "Необходимо авторизоваться.")
+            return False
 
+        role = self.current_user[5]
+        if role not in self.ALLOWED_ROLES:
+            messagebox.showerror(
+                "Доступ запрещён",
+                f"Роль «{role}» не имеет доступа к заказам.\n"
+                f"Разрешено: {', '.join(self.ALLOWED_ROLES)}."
+            )
+            return False
+
+        return True
+
+    def build_table(self):
+        columns = ("id", "дата", "клиент", "сумма")
+        self.tree = ttk.Treeview(self.win, columns=columns, show="headings")
 
         self.tree.heading("id", text="№")
-        self.tree.heading("date", text="Дата")
-        self.tree.heading("client", text="Клиент")
+        self.tree.heading("дата", text="Дата")
+        self.tree.heading("клиент", text="Клиент")
+        self.tree.heading("сумма", text="Сумма")
 
+        self.tree.column("id", width=60, anchor="center")
+        self.tree.column("дата", width=150, anchor="center")
+        self.tree.column("клиент", width=250)
+        self.tree.column("сумма", width=120, anchor="e")
 
-        self.tree.column("id", width=50, anchor="center")
-        self.tree.column("date", width=120, anchor="center")
-        self.tree.column("client", width=400, anchor="w")
-
-
-        self.tree.pack(fill="both", expand=True, padx=20, pady=20)
-
-
-        # Привязка двойного клика
-        self.tree.bind("<Double-1>", self.on_order_select)
-
-
-        # Кнопки
-        btn_frame = tk.Frame(self.window, bg=COLOR_MAIN_BG)
-        btn_frame.pack(fill="x", pady=10)
-
-
-        tk.Button(btn_frame, text="Просмотр состава",
-                  command=self.on_order_select,
-                  bg=COLOR_ACCENT, fg="white",
-                  font=font(FONT_SIZE_NORMAL),
-                  padx=15, pady=5).pack(side="left", padx=20)
-
-
-        tk.Button(btn_frame, text="Обновить",
-                  command=self.load_orders,
-                  bg=COLOR_ACCENT, fg="white",
-                  font=font(FONT_SIZE_NORMAL),
-                  padx=15, pady=5).pack(side="left", padx=10)
-
-
-        tk.Button(btn_frame, text="Назад",
-                  command=self.window.destroy,
-                  bg=COLOR_ACCENT, fg="white",
-                  font=font(FONT_SIZE_NORMAL),
-                  padx=15, pady=5).pack(side="right", padx=20)
-
+        self.tree.pack(fill="both", expand=True, padx=10, pady=10)
 
     def load_orders(self):
-        """Загружает заказы из БД."""
-        # Очищаем таблицу
-        for row in self.tree.get_children():
-            self.tree.delete(row)
-
-
-        # Загружаем заказы
         try:
-            orders = om.get_all_orders()
-            for order in orders:
-                self.tree.insert("", tk.END, values=order)
+            import database as db
+            conn = db.get_connection()
+            cur = conn.cursor()
+            cur.execute("""
+                SELECT Заказ.id, Заказ.дата, Заказ.клиент,
+                       IFNULL(SUM(Состав_заказа.количество *
+                                  Состав_заказа.цена), 0)
+                FROM Заказ
+                LEFT JOIN Состав_заказа
+                       ON Заказ.id = Состав_заказа.заказ_id
+                GROUP BY Заказ.id
+                ORDER BY Заказ.id
+            """)
+            rows = cur.fetchall()
+            conn.close()
+
+            for row in rows:
+                self.tree.insert("", "end", values=row)
         except Exception as e:
-            messagebox.showerror("Ошибка", f"Не удалось загрузить заказы:\n{e}")
-
-
-    def on_order_select(self, event=None):
-        """Обработчик выбора заказа."""
-        selected = self.tree.selection()
-        if not selected:
-            messagebox.showwarning("Ошибка", "Выберите заказ")
-            return
-
-
-        # Получаем данные выбранного заказа
-        item = self.tree.item(selected[0])
-        order_id = item["values"][0]
-
-
-        # Открываем окно состава заказа
-        from order_items_window import OrderItemsWindow
-        OrderItemsWindow(self.window, order_id)
+            messagebox.showerror("Ошибка БД", str(e))
 
 
