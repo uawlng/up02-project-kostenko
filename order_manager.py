@@ -64,6 +64,11 @@ def create_order(client, items):
 
 
 def update_product_quantity(product_id, new_quantity):
+    """
+    Устанавливает новое количество товара в БД.
+    :param product_id: id товара
+    :param new_quantity: новое количество (перезаписывает текущее)
+    """
     try:
         conn = get_connection()
         cur = conn.cursor()
@@ -113,6 +118,11 @@ def decrease_product_quantity(product_id, quantity):
 
 
 def get_product_quantity(product_id):
+    """
+    Возвращает текущее количество товара на складе.
+    :param product_id: id товара
+    :return: количество (int). Если товара нет — 0.
+    """
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("SELECT количество FROM Товар WHERE id = ?", (product_id,))

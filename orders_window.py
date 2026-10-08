@@ -20,29 +20,36 @@ class OrdersWindow:
     
     
     def build_ui(self):
+        """Строит интерфейс окна: шапку, таблицу заказов и кнопки."""
+        #Шапка окна
         header = tk.Frame(self.window, bg=COLOR_SECONDARY_BG, height=60)
         header.pack(fill="x")
         header.pack_propagate(False)
         
         tk.Label(header, text="Список Заказов", font=font(FONT_SIZE_NORMAL, bold=True), bg=COLOR_SECONDARY_BG).pack(pady=15)
-        
+
+        #Таблица заказов
         columns = ("id", "date", "client", "name")
         self.tree = ttk.Treeview(self.window, columns=columns, show="headings", height=15)
-        
+
+        # Заголовки колонок
         self.tree.heading("id", text="№")
         self.tree.heading("date", text="Дата")
         self.tree.heading("client", text="Клиент")
         self.tree.heading("name", text="Товар")
-        
+
+        # Ширина и выравнивание
         self.tree.column("id", width=50, anchor="center")
         self.tree.column("date", width=120, anchor="center")
         self.tree.column("client", width=400, anchor="center")
         self.tree.column("name", width=50, anchor="w")
         
         self.tree.pack(fill="both", expand=True, padx=20, pady=20)
-        
+
+        # Двойной клик по заказу — открыть состав
         self.tree.bind("<Double-1>", self.on_order_select)
-        
+
+        #Кнопки 
         btn_frame = tk.Frame(self.window, bg=COLOR_MAIN_BG)
         btn_frame.pack(fill="x", pady=10)
         
@@ -55,9 +62,12 @@ class OrdersWindow:
        
         
     def load_orders(self):
+        """Загружает список заказов из БД в таблицу."""
+
+        #Очищаем таблицу перед обновлением
         for row in self.tree.get_children():
             self.tree.delete(row)
-            
+        #Загружаем заказы и вставляем их в таблицу    
         try:
             orders = om.get_all_orders()
             for order in orders:
@@ -67,14 +77,18 @@ class OrdersWindow:
        
             
     def on_order_select(self, event=None):
+        """Открывает окно состава выбранного заказа."""
+        #Проверяем, выбран ли заказ в таблице
         selected = self.tree.selection()
         if not selected:
             messagebox.showerror("Ошибка", "Выберите заказ")
             return
-        
+
+       #Берём id заказа из первой колонки выделенной строки 
         item = self.tree.item(selected[0])
         order_id = item["values"][0]
-        
+
+        #Открываем окно состава заказа
         from order_items_window import OrderItemsWindow
         OrderItemsWindow(self.window, order_id, self.current_user)
 
