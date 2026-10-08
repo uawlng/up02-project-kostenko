@@ -234,7 +234,7 @@ def delete_order_item(item_id):
 
         product_id, quantity = row
 
-        # Удаляем позицию
+        #  Удаляем позицию
         cur.execute("DELETE FROM Состав_заказа WHERE id = ?", (item_id,))
 
         # Восстанавливаем остатки
